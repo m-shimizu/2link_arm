@@ -189,5 +189,10 @@
       </axis>
     </joint>
 
+    <plugin name="Control_Joints" filename="lib2link_arm_plugin.so">
+      <shoulder>base_arm2</shoulder>
+      <elbow>arm2_arm1</elbow>
+    </plugin>
+
     </model>
 </sdf>
