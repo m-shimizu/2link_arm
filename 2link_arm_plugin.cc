@@ -113,6 +113,8 @@ int	doslike_getch(void)
 	return c;
 }
 
+///////////////////////////////////////////////////
+// The inverse kinematics calculation
 void ik(float* th1, float* th2, float px, float py)
 {
   float l1 = 0.2, l2 = 0.2, th1_tmp, th2_tmp, so2, co2;
@@ -122,7 +124,7 @@ void ik(float* th1, float* th2, float px, float py)
     *th2    = atan2(-sqrt(1 - th2_tmp*th2_tmp), th2_tmp);
     so2     = sin(*th2) , co2 = cos(*th2);
     th1_tmp = (px*(l1 + l2*co2) + py*l2*so2)/(px*px + py*py);
-    *th1    = atan2(-sqrt(1 - th1_tmp*th1_tmp), th1_tmp);
+    *th1    = atan2(+sqrt(1 - th1_tmp*th1_tmp), th1_tmp);
   }
   else
   {
@@ -136,7 +138,7 @@ void ik(float* th1, float* th2, float px, float py)
 // To control joint behaviors by keyboard input directory
 void	_2link_arm::check_key_command(void)
 {
-  static float Px = -0.3, Py = 0;
+  static float Px = 0.4, Py = 0;
   static float Target_Angle_Shoulder = 0, Target_Angle_Elbow = 0;
   float        OrderS, OrderE;
 	if(doslike_kbhit())
@@ -144,28 +146,27 @@ void	_2link_arm::check_key_command(void)
 		int cmd = doslike_getch();
 		switch(cmd)
 		{
-			case 'e': Px += 5;
+			case 'e': Px += 0.05;
 				  break;
-			case 'c': Px -= 5;
+			case 'c': Px -= 0.05;
 				  break;
-			case 's': Py += 5;
+			case 's': Py += 0.05;
 				  break;
-			case 'f': Py -= 5;
+			case 'f': Py -= 0.05;
 				  break;
-			case 'd': Px = -0.4, Py = 0;
+			case 'd': Px = 0.4, Py = 0;
 				  break;
 		}
 	}
   ik(&Target_Angle_Shoulder, &Target_Angle_Elbow, Px, Py);
-//this->JointS->SetForce(0, 1)
 	printf("Soulder : %f\n", this->JointS->GetAngle(0).Degree());
 	printf("Elbow : %f\n", this->JointE->GetAngle(0).Degree());
 	printf("Target S : %f\n", Target_Angle_Shoulder);
 	printf("Target E : %f\n", Target_Angle_Elbow);
 	OrderS = this->JointS->GetAngle(0).Radian()-Target_Angle_Shoulder;
 	OrderE = this->JointE->GetAngle(0).Radian()-Target_Angle_Elbow;
-	this->JointS->SetForce(0, -0.01 * OrderS);
-	this->JointE->SetForce(0, -0.01 * OrderE);
+	this->JointS->SetForce(0, -10 * OrderS);
+	this->JointE->SetForce(0, -10 * OrderE);
 }
 
 /////////////////////////////////////////////////

@@ -10,7 +10,7 @@
     </include>
 
     <include>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0 0 0 3.14159265</pose>
       <uri>model://2link_arm</uri>
     </include>
   </world>
