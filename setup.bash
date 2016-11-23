@@ -1,1 +1,2 @@
+export GAZEBO_MODEL_PATH=`pwd`/models:${GAZEBO_MODEL_PATH}
 export GAZEBO_PLUGIN_PATH=`pwd`/build:${GAZEBO_PLUGIN_PATH}
