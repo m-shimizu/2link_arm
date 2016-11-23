@@ -160,6 +160,9 @@
           <lower>-0.76</lower>
           <upper>0.76</upper>
         </limit>
+        <dynamics>
+          <friction>0.01</friction>
+        </dynamics>
       </axis>
     </joint>
 
@@ -173,6 +176,9 @@
           <lower>-0.76</lower>
           <upper>0.76</upper>
         </limit>
+        <dynamics>
+          <friction>0.01</friction>
+        </dynamics>
       </axis>
     </joint>
 
