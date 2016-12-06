@@ -144,13 +144,13 @@ void	_2link_arm::check_key_command(void)
 		int cmd = doslike_getch();
 		switch(cmd)
 		{
-			case 'f': Px += 0.05;
+			case 'e': Px += 0.05;
 				  break;
-			case 's': Px -= 0.05;
+			case 'c': Px -= 0.05;
 				  break;
-			case 'e': Py += 0.05;
+			case 's': Py += 0.05;
 				  break;
-			case 'c': Py -= 0.05;
+			case 'f': Py -= 0.05;
 				  break;
 			case 'd': Px = 0.4, Py = 0;
 				  break;
@@ -166,32 +166,30 @@ void _2link_arm::OnVelMsg(ConstPosePtr &_msg)
 /////////////////////////////////////////////////
 void _2link_arm::PID_Control(void)
 {
-  float Monitor_Angle_Shoulder, Monitor_Angle_Elbow;
-  float Target_Angle_Shoulder , Target_Angle_Elbow;
-  float OrderS, OrderE;
+  static float Last_MAS = 0, Last_MAE = 0;
+  float        Diff_MAS    , Diff_MAE;
+  float        Monitor_AS  , Monitor_AE;
+  static float Target_Angle_Shoulder = 0, Target_Angle_Elbow = 0;
+  float        OrderS, OrderE;
   ik(&Target_Angle_Shoulder, &Target_Angle_Elbow, Px, Py);
-  Monitor_Angle_Shoulder = this->JointS->GetAngle(0).Radian();
-  Monitor_Angle_Elbow    = this->JointE->GetAngle(0).Radian();
+  Monitor_AS = this->JointS->GetAngle(0).Radian();
+  Monitor_AE = this->JointE->GetAngle(0).Radian();
+  Diff_MAS = Monitor_AS - Last_MAS;  // Calculate Diffalential at first.
+  Diff_MAE = Monitor_AE - Last_MAE;
+  Last_MAS = Monitor_AS;             // Set last value at second.
+  Last_MAE = Monitor_AE;
 
-	printf("Monitor Angle Soulder : %f\n", this->JointS->GetAngle(0).Degree());
-	printf("Monitor Angle Elbow   : %f\n", this->JointE->GetAngle(0).Degree());
-	printf("Target Angle Shoulder : %f\n", Target_Angle_Shoulder);
-	printf("Target Angle Elbow    : %f\n", Target_Angle_Elbow);
+	printf("Soulder : %f\n", this->JointS->GetAngle(0).Degree());
+	printf("Elbow : %f\n", this->JointE->GetAngle(0).Degree());
+	printf("Target S : %f\n", Target_Angle_Shoulder);
+	printf("Target E : %f\n", Target_Angle_Elbow);
 
   // Proportional Control
-  OrderS = -10 * (Monitor_Angle_Shoulder - Target_Angle_Shoulder);
-  OrderE = -10 * (Monitor_Angle_Elbow - Target_Angle_Elbow);
+  OrderS = -10 * (Monitor_AS - Target_Angle_Shoulder) - 1 * Diff_MAS;
+  OrderE = -10 * (Monitor_AE - Target_Angle_Elbow)    - 1 * Diff_MAE;
 
-  this->PidS = common::PID(0.1, 0, 0);
-  this->PidE = common::PID(0.1, 0, 0);
-
-  this->model->GetJointController()->SetVelocityPID(
-        this->JointS->GetScopedName(), this->PidS);
-  this->model->GetJointController()->SetVelocityPID(
-        this->JointE->GetScopedName(), this->PidE);
-
-  this->JointS->SetVelocity(0, OrderS);
-  this->JointE->SetVelocity(0, OrderE);
+  this->JointS->SetForce(0, OrderS);
+  this->JointE->SetForce(0, OrderE);
 }
 
 /////////////////////////////////////////////////

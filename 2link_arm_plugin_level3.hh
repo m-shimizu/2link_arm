@@ -46,8 +46,6 @@ namespace gazebo
     private: physics::JointPtr JointS, JointE;
     private: event::ConnectionPtr updateConnection;
     private: common::Time prevUpdateTime;
-
-    private: common::PID PidS, PidE; // PID parameters in velocity control
   };
 }
 #endif
