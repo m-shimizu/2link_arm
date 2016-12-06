@@ -31,6 +31,7 @@ GZ_REGISTER_MODEL_PLUGIN(_2link_arm)
 /////////////////////////////////////////////////
 _2link_arm::_2link_arm()
 {
+  Px = 0.4, Py = 0;
 }
 
 /////////////////////////////////////////////////
@@ -138,9 +139,6 @@ void ik(float* th1, float* th2, float px, float py)
 // To control joint behaviors by keyboard input directory
 void	_2link_arm::check_key_command(void)
 {
-  static float Px = 0.4, Py = 0;
-  static float Target_Angle_Shoulder = 0, Target_Angle_Elbow = 0;
-  float        OrderS, OrderE;
 	if(doslike_kbhit())
 	{
 		int cmd = doslike_getch();
@@ -158,15 +156,6 @@ void	_2link_arm::check_key_command(void)
 				  break;
 		}
 	}
-  ik(&Target_Angle_Shoulder, &Target_Angle_Elbow, Px, Py);
-	printf("Soulder : %f\n", this->JointS->GetAngle(0).Degree());
-	printf("Elbow : %f\n", this->JointE->GetAngle(0).Degree());
-	printf("Target S : %f\n", Target_Angle_Shoulder);
-	printf("Target E : %f\n", Target_Angle_Elbow);
-	OrderS = this->JointS->GetAngle(0).Radian()-Target_Angle_Shoulder;
-	OrderE = this->JointE->GetAngle(0).Radian()-Target_Angle_Elbow;
-	this->JointS->SetForce(0, -10 * OrderS);
-	this->JointE->SetForce(0, -10 * OrderE);
 }
 
 /////////////////////////////////////////////////
@@ -175,7 +164,36 @@ void _2link_arm::OnVelMsg(ConstPosePtr &_msg)
 }
 
 /////////////////////////////////////////////////
+void _2link_arm::PID_Control(void)
+{
+  static float Last_MAS = 0, Last_MAE = 0;
+  float        Diff_MAS    , Diff_MAE;
+  float        Monitor_AS  , Monitor_AE;
+  static float Target_Angle_Shoulder = 0, Target_Angle_Elbow = 0;
+  float        OrderS, OrderE;
+  ik(&Target_Angle_Shoulder, &Target_Angle_Elbow, Px, Py);
+  Monitor_AS = this->JointS->GetAngle(0).Radian();
+  Monitor_AE = this->JointE->GetAngle(0).Radian();
+  Diff_MAS = Monitor_AS - Last_MAS;  // Calculate Diffalential at first.
+  Diff_MAE = Monitor_AE - Last_MAE;
+  Last_MAS = Monitor_AS;             // Set last value at second.
+  Last_MAE = Monitor_AE;
+
+	printf("Soulder : %f\n", this->JointS->GetAngle(0).Degree());
+	printf("Elbow : %f\n", this->JointE->GetAngle(0).Degree());
+	printf("Target S : %f\n", Target_Angle_Shoulder);
+	printf("Target E : %f\n", Target_Angle_Elbow);
+
+  // Proportional Control
+  OrderS = -0.1 * (Monitor_AS - Target_Angle_Shoulder) - 0.01 * Diff_MAS;
+  OrderE = -0.1 * (Monitor_AE - Target_Angle_Elbow)    - 0.01 * Diff_MAE;
+  this->JointS->SetForce(0, OrderS);
+  this->JointE->SetForce(0, OrderE);
+}
+
+/////////////////////////////////////////////////
 void _2link_arm::OnUpdate()
 {
   check_key_command();
+  PID_Control();
 }

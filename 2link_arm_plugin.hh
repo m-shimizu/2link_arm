@@ -33,6 +33,7 @@ namespace gazebo
     public: virtual void Init();
 
     private: void OnUpdate();
+    private: void PID_Control(void);
 
     private: void OnVelMsg(ConstPosePtr &_msg);
     private: void check_key_command(void);
@@ -40,6 +41,7 @@ namespace gazebo
     private: transport::NodePtr node;
     private: transport::SubscriberPtr velSub;
 
+    private: float Px, Py;
     private: physics::ModelPtr model;
     private: physics::JointPtr JointS, JointE;
     private: event::ConnectionPtr updateConnection;
