@@ -197,6 +197,6 @@ void _2link_arm::PID_Control(void)
 /////////////////////////////////////////////////
 void _2link_arm::OnUpdate()
 {
-//  check_key_command();
+  check_key_command();
   PID_Control();
 }

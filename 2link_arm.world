@@ -27,11 +27,20 @@
           </geometry>
         </visual>
         <collision name="collision">
+          <surface>
+            <friction>
+              <ode>
+                <mu>0</mu>
+                <mu2>0</mu2>
+              </ode>
+            </friction>
+          </surface>
           <geometry>
             <cylinder><radius>0.05</radius><length>0.01</length></cylinder>
           </geometry>
         </collision>
       </link>
+      <plugin name="model_push" filename="libmodel_push.so"/>
     </model>
 
     <model name="wall">
