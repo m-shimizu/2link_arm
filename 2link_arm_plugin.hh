@@ -35,7 +35,7 @@ namespace gazebo
     private: void OnUpdate();
     private: void PID_Control(void);
 
-    private: void OnVelMsg(ConstPosePtr &_msg);
+    private: void OnVelMsg(ConstVector3dPtr &_msg);
     private: void check_key_command(void);
 
     private: transport::NodePtr node;

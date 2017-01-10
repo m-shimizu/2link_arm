@@ -18,6 +18,12 @@ namespace gazebo
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(
           boost::bind(&ModelPush::OnUpdate, this, _1));
 
+      gazebo::transport::NodePtr node(new gazebo::transport::Node());
+      node->Init();
+
+      pub = node->Advertise<gazebo::msgs::Vector3d>("~/2link_arm/vel_cmd");
+      pub->WaitForConnection();
+
       this->model->SetLinearVel(math::Vector3(0.1, 0.09, 0));
     }
 
@@ -27,6 +33,15 @@ namespace gazebo
       // Apply a small linear velocity to the model.
 //      this->model->SetLinearVel(math::Vector3(.03, 0.05, 0));
         check_key_command();
+        gazebo::msgs::Vector3d msg;
+        float x, y, z;
+        // Get current pack xyz.
+        x = this->model->GetWorldPose().pos.x;
+        y = this->model->GetWorldPose().pos.y;
+        z = this->model->GetWorldPose().pos.z;
+        // Publish the pack xyz.
+        gazebo::msgs::Set(&msg, gazebo::math::Vector3(x, y, z));
+        pub->Publish(msg);
     }
 
     // Pointer to the model
@@ -34,6 +49,8 @@ namespace gazebo
 
     // Pointer to the update event connection
     private: event::ConnectionPtr updateConnection;
+
+    private: gazebo::transport::PublisherPtr pub;
 
 /////////////////////////////////////////////////
 // To know pushing any key

@@ -57,7 +57,6 @@ void _2link_arm::Load(physics::ModelPtr _model,
   this->JointE = _model->GetJoint(
       _sdf->GetElement("elbow")->Get<std::string>());
 
-
   if (!this->JointS)
     gzerr << "Unable to find shoulder joint["
           << _sdf->GetElement("shoulder")->Get<std::string>() << "]\n";
@@ -159,8 +158,11 @@ void	_2link_arm::check_key_command(void)
 }
 
 /////////////////////////////////////////////////
-void _2link_arm::OnVelMsg(ConstPosePtr &_msg)
+void _2link_arm::OnVelMsg(ConstVector3dPtr &_msg)
 {
+//  printf("================== %f\n", _msg->x());
+  Px = _msg->x();
+  Py = _msg->y();
 }
 
 /////////////////////////////////////////////////
@@ -172,12 +174,12 @@ void _2link_arm::PID_Control(void)
   ik(&Target_Angle_Shoulder, &Target_Angle_Elbow, Px, Py);
   Monitor_Angle_Shoulder = this->JointS->GetAngle(0).Radian();
   Monitor_Angle_Elbow    = this->JointE->GetAngle(0).Radian();
-
+/*
 	printf("Monitor Angle Soulder : %f\n", this->JointS->GetAngle(0).Degree());
 	printf("Monitor Angle Elbow   : %f\n", this->JointE->GetAngle(0).Degree());
 	printf("Target Angle Shoulder : %f\n", Target_Angle_Shoulder);
 	printf("Target Angle Elbow    : %f\n", Target_Angle_Elbow);
-
+*/
   // Proportional Control
   OrderS = -10 * (Monitor_Angle_Shoulder - Target_Angle_Shoulder);
   OrderE = -10 * (Monitor_Angle_Elbow - Target_Angle_Elbow);
