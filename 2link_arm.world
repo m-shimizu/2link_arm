@@ -40,7 +40,7 @@
           </geometry>
         </collision>
       </link>
-      <plugin name="model_push" filename="libmodel_push.so"/>
+      <plugin name="pach_push" filename="libpack_push.so"/>
     </model>
 
     <model name="wall">

@@ -6,7 +6,7 @@
 
 namespace gazebo
 {
-  class ModelPush : public ModelPlugin
+  class PackPush : public ModelPlugin
   {
     public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
     {
@@ -16,7 +16,7 @@ namespace gazebo
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(
-          boost::bind(&ModelPush::OnUpdate, this, _1));
+          boost::bind(&PackPush::OnUpdate, this, _1));
 
       gazebo::transport::NodePtr node(new gazebo::transport::Node());
       node->Init();
@@ -118,5 +118,5 @@ void	check_key_command(void)
   };
 
   // Register this plugin with the simulator
-  GZ_REGISTER_MODEL_PLUGIN(ModelPush)
+  GZ_REGISTER_MODEL_PLUGIN(PackPush)
 }
