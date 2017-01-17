@@ -155,12 +155,45 @@ void	_2link_arm::check_key_command(void)
 	}
 }
 
+#define LEVEL 0 // 0 : Through at all.
+                // 1 : Simple state machine.
+/////////////////////////////////////////////////
+void Strategy(float* Xt, float* Yt, double Xp, double Yp)
+{
+#if(LEVEL==0)
+  *Xt = Xp;
+  *Yt = Yp;
+#endif 
+#if(LEVEL==1)
+  int state = 0; // 0 means "Stand by".
+  if(Xp > 0.4)
+  {
+    state = 1; // 1 means "Aiming".
+  }
+  else if(Xp > 0.3 && Xp < 0.4)
+  {
+    state = 2; // 2 means "Hitting".
+  }
+  switch(state)
+  {
+    case 0 : *Xt = 0.2*sqrt(2);
+             *Yt = 0;
+             break;
+    case 1 : *Xt = 0.2*sqrt(2);
+             *Yt = Yp;
+             break;
+    case 2 : *Xt = Xp;
+             *Yt = Yp;
+             break;
+  }
+#endif
+}
+
 /////////////////////////////////////////////////
 void _2link_arm::OnVelMsg(ConstVector3dPtr &_msg)
 {
 //  printf("== %3.1f, %3.1f\n", _msg->x(), _msg->y());
-  Px = _msg->x();
-  Py = _msg->y();
+  Strategy(&Px, &Py, _msg->x(), _msg->y() );
 }
 
 /////////////////////////////////////////////////
