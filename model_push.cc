@@ -24,7 +24,7 @@ namespace gazebo
       pub = node->Advertise<gazebo::msgs::Vector3d>("~/2link_arm/vel_cmd");
       pub->WaitForConnection();
 
-      this->model->SetLinearVel(math::Vector3(0.1, 0.09, 0));
+      this->model->SetLinearVel(math::Vector3(0.0, 0.1, 0));
     }
 
     // Called by the world update start event
@@ -36,8 +36,8 @@ namespace gazebo
         gazebo::msgs::Vector3d msg;
         float x, y, z;
         // Get current pack xyz.
-        x = this->model->GetWorldPose().pos.x;
-        y = this->model->GetWorldPose().pos.y;
+        x = this->model->GetWorldPose().pos.x + 1;
+        y = this->model->GetWorldPose().pos.y + 0;
         z = this->model->GetWorldPose().pos.z;
         // Publish the pack xyz.
         gazebo::msgs::Set(&msg, gazebo::math::Vector3(x, y, z));

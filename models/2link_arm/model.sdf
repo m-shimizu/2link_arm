@@ -173,8 +173,8 @@
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
-          <lower>-0.76</lower>
-          <upper>0.76</upper>
+          <lower>-1.57</lower>
+          <upper>0</upper>
         </limit>
         <dynamics>
           <friction>0.01</friction>

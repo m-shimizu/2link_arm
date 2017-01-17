@@ -117,19 +117,17 @@ int	doslike_getch(void)
 // The inverse kinematics calculation
 void ik(float* th1, float* th2, float px, float py)
 {
-  float l1 = 0.2, l2 = 0.2, th1_tmp, th2_tmp, so2, co2;
-  if(sqrt(px*px+py*py)<l1+l2)
+  float L1 = 0.2 , L2 = 0.2 , D;
+  D = sqrt(px*px + py*py);
+  if(D < L1 + L2)
   {
-    th2_tmp = (px*px + py*py - l1*l1 - l2*l2)/(2*l1*l2);
-    *th2    = atan2(-sqrt(1 - th2_tmp*th2_tmp), th2_tmp);
-    so2     = sin(*th2) , co2 = cos(*th2);
-    th1_tmp = (px*(l1 + l2*co2) + py*l2*so2)/(px*px + py*py);
-    *th1    = atan2(+sqrt(1 - th1_tmp*th1_tmp), th1_tmp);
+    *th2 = -(3.14 - acos( (L1*L1 + L2*L2 - D*D) / (2*L1*L2) ));
+    *th1 = atan2(py, px) + acos( (L1*L1 + D*D - L2*L2) / (2*L1*D) );
   }
   else
   {
-    *th2    = 0;
-    *th1    = atan2(py, px);
+    *th2 = 0;
+    *th1 = atan2(py, px);
   }
 }
 
@@ -160,7 +158,7 @@ void	_2link_arm::check_key_command(void)
 /////////////////////////////////////////////////
 void _2link_arm::OnVelMsg(ConstVector3dPtr &_msg)
 {
-//  printf("================== %f\n", _msg->x());
+//  printf("== %3.1f, %3.1f\n", _msg->x(), _msg->y());
   Px = _msg->x();
   Py = _msg->y();
 }
