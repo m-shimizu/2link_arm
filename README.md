@@ -1,2 +1,4 @@
 # 2link_arm
-This is a robot arm model which has 2 links for education.
+This repository has been moved into https://github.com/m-shimizu/Samples_Gazebo_ROS/tree/master/src/twoLnkArm.
+
+UPDATED 2018.2.2
